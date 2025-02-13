@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma"; // Assuming prisma.ts is in lib folder
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 
