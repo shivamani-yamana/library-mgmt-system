@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // NeonDB connection
+}
+
+model User {
+  id        String   @id @default(uuid()) // Clerk user ID
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+}
+
+model Book {
+  id                String     @id @default(uuid())
+  title             String
+  author            String
+  isbn              String     @unique
+  quantity          Int        @default(1)
+  availableQuantity Int        @default(1)
+  status            String     @default("available")
+  checkouts         Checkout[]
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @default(now()) @updatedAt
+}
+
+model Checkout {
+  id           String    @id
+  bookId       String
+  studentEmail String
+  checkoutDate DateTime  @default(now())
+  returnDate   DateTime?
+  status       String // 'borrowed' or 'returned'
+  book         Book      @relation(fields: [bookId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  synced       Boolean   @default(false)
+}
+
+model OfflineSync {
+  id        String   @id @default(uuid())
+  userId    String
+  bookId    String
+  action    String // "borrow" or "return"
+  synced    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
